@@ -30,13 +30,13 @@ class MiniMediaPlayerTts extends LitElement {
 
   render() {
     return html`
-      <ha-textfield
+      <input
+        type="text"
         id="tts-input"
         class="mmp-tts__input"
         placeholder="${this.label}..."
         @click=${e => e.stopPropagation()}
-      >
-      </ha-textfield>
+      />
       <mmp-button class="mmp-tts__button" @click=${this.handleTts}>
         <span>${t(this.hass, 'label.send')}</span>
       </mmp-button>
@@ -111,9 +111,22 @@ class MiniMediaPlayerTts extends LitElement {
         display: flex;
       }
       .mmp-tts__input {
+        background: var(--card-background-color);
+        border: 1px solid var(--divider-color);
+        border-radius: 4px;
+        box-sizing: border-box;
+        color: var(--primary-text-color);
         cursor: text;
         flex: 1;
+        font: inherit;
+        height: 30px;
         margin-right: 8px;
+        min-width: 0;
+        padding: 0 8px;
+      }
+      .mmp-tts__input:focus {
+        border-color: var(--primary-color);
+        outline: none;
       }
       ha-card[rtl] .mmp-tts__input {
         margin-right: auto;
