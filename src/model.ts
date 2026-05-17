@@ -417,6 +417,7 @@ export default class MediaPlayerObject {
             PLATFORM.SQUEEZEBOX,
           );
         case PLATFORM.MEDIAPLAYER:
+        case PLATFORM.LINKPLAY:
         case PLATFORM.SONOS:
           return this.callService(
             e,
@@ -447,6 +448,7 @@ export default class MediaPlayerObject {
         case PLATFORM.SQUEEZEBOX:
           return this.callService(e, 'unsync', options, PLATFORM.SQUEEZEBOX);
         case PLATFORM.MEDIAPLAYER:
+        case PLATFORM.LINKPLAY:
         case PLATFORM.SONOS:
           return this.callService(
             e,
