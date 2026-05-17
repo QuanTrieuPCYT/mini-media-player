@@ -116,18 +116,34 @@ class MiniMediaPlayerMediaControls extends LitElement {
   }
 
   renderVolSlider(muted) {
+    const percent = Math.round(this.player.vol * 100);
     return html`
-      ${this.renderMuteButton(muted)}
-      <ha-slider
-        @change=${this.handleVolumeChange}
-        @click=${e => e.stopPropagation()}
-        ?disabled=${muted}
-        min=${this.minVol} max=${this.maxVol}
-        .value=${this.player.vol * 100}
-        step=${this.config.volume_step || 1}
-        dir=${'ltr'}
-        ignore-bar-touch pin labeled>
-      </ha-slider>
+      <div style="display: flex; align-items: center; flex: 1;">
+        ${this.renderMuteButton(muted)}
+        <div class="vol-slider-wrapper" style="--slider-value: ${percent};">
+          <input
+            type="range"
+            class="native-vol-slider"
+            @change=${this.handleVolumeChange}
+            @input=${(e) => {
+              const val = e.target.value;
+              const wrapper = e.target.parentElement;
+              wrapper.style.setProperty('--slider-value', val);
+              wrapper.querySelector('.vol-tooltip-value').innerText = val;
+            }}
+            @click=${e => e.stopPropagation()}
+            ?disabled=${muted}
+            min=${this.minVol} max=${this.maxVol}
+            .value=${percent}
+            step=${this.config.volume_step || 1}
+          />
+          <div class="vol-tooltip-wrapper">
+            <div class="vol-tooltip-shape">
+              <span class="vol-tooltip-value">${percent}</span>
+            </div>
+          </div>
+        </div>
+      </div>
     `;
   }
 
@@ -279,15 +295,106 @@ class MiniMediaPlayerMediaControls extends LitElement {
           flex: 1;
           justify-content: space-between;
         }
-        ha-slider {
+        .vol-slider-wrapper {
+          position: relative;
+          width: 100%;
+          margin: 0 8px;
+          display: flex;
+          align-items: center;
+        }
+        .native-vol-slider {
+          -webkit-appearance: none;
+          appearance: none;
           max-width: none;
           min-width: 100px;
           width: 100%;
-          --md-sys-color-primary: var(--mmp-accent-color); /* before 2025.10.0 */
-          color: var(--primary-text-color);
+          margin: 0;
+          background: transparent;
+          height: 30px;
+          cursor: pointer;
+          transform: translateY(calc(var(--mmp-unit) * 0.075));
         }
-        ha-icon-button {
-          min-width: var(--mmp-unit);
+        .native-vol-slider:focus { outline: none; }
+        .native-vol-slider:disabled { cursor: not-allowed; opacity: 0.5; }
+        .native-vol-slider::-webkit-slider-runnable-track {
+          width: 100%;
+          height: 4px;
+          border-radius: 2px;
+          background: linear-gradient(
+            to right,
+            var(--mmp-accent-color, var(--accent-color)) calc(var(--slider-value, 0) * 1%),
+            rgba(var(--rgb-primary-text-color), 0.3) calc(var(--slider-value, 0) * 1%)
+          );
+        }
+        .native-vol-slider::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          height: 14px;
+          width: 14px;
+          border-radius: 50%;
+          background: var(--mmp-accent-color, var(--accent-color));
+          margin-top: -5px; 
+          box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+          transition: transform 0.1s ease;
+        }
+        .native-vol-slider:not(:disabled)::-webkit-slider-thumb:hover { transform: scale(1.3); }
+        .native-vol-slider::-moz-range-track {
+          width: 100%;
+          height: 4px;
+          border-radius: 2px;
+          background: linear-gradient(
+            to right,
+            var(--mmp-accent-color, var(--accent-color)) calc(var(--slider-value, 0) * 1%),
+            rgba(var(--rgb-primary-text-color), 0.3) calc(var(--slider-value, 0) * 1%)
+          );
+        }
+        .native-vol-slider::-moz-range-thumb {
+          height: 14px;
+          width: 14px;
+          border-radius: 50%;
+          background: var(--mmp-accent-color, var(--accent-color));
+          border: none;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+          transition: transform 0.1s ease;
+        }
+        .native-vol-slider:not(:disabled)::-moz-range-thumb:hover { transform: scale(1.3); }
+        .vol-tooltip-wrapper {
+          position: absolute;
+          top: -32px;
+          left: calc(var(--slider-value, 0) * 1%);
+          transform: translateX(calc(-50% + 7px - (var(--slider-value, 0) * 0.14px)));
+          
+          display: flex;
+          justify-content: center;
+          align-items: flex-end;
+          pointer-events: none;
+          z-index: 1000;
+          opacity: 0;
+          visibility: hidden;
+          transition: opacity 0.2s ease, visibility 0.2s ease;
+        }
+        .native-vol-slider:not(:disabled):active ~ .vol-tooltip-wrapper {
+          opacity: 1;
+          visibility: visible;
+        }
+        .vol-tooltip-shape {
+          width: 28px;
+          height: 28px;
+          background-color: var(--mmp-accent-color, var(--accent-color));
+          border-radius: 50% 50% 50% 0;
+          transform: rotate(-45deg);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .vol-tooltip-value {
+          transform: rotate(45deg);
+          color: var(--vol-tooltip-text-color, #e1e1e1);
+          font-size: var(--md-slider-label-text-size, var(--md-sys-typescale-label-medium-size, 0.85rem));
+          font-weight: var(--md-slider-label-text-weight, var(--md-sys-typescale-label-medium-weight, var(--md-ref-typeface-weight-medium, 500)));
+          font-family: var(--ha-font-family-body, Roboto, sans-serif);
+          line-height: 1;
         }
         .mmp-media-controls__volume {
           flex: 100;
