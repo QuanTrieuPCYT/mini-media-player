@@ -1,0 +1,33 @@
+name: Build mini-media-player
+
+on:
+  push:
+    branches: [ "master", "custom" ]
+  pull_request:
+    branches: [ "master", "custom" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the project
+        run: npm run build
+
+      - name: Upload built bundle
+        uses: actions/upload-artifact@v7
+        with:
+          name: mini-media-player-bundle
+          path: dist/mini-media-player-bundle.js
