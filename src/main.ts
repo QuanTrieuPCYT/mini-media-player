@@ -348,17 +348,25 @@ class MiniMediaPlayer extends LitElement {
 
   computeStyles(): DirectiveResult<typeof StyleMapDirective> {
     const { scale } = this.config;
+    const fg = this.foregroundColor;
+    let tooltipTextColor = '#e1e1e1';
+    if (fg && this.player.isActive) {
+      const r = parseInt(fg.slice(1, 3), 16);
+      const g = parseInt(fg.slice(3, 5), 16);
+      const b = parseInt(fg.slice(5, 7), 16);
+      tooltipTextColor = ((r * 299 + g * 587 + b * 114) / 1000) >= 128 ? '#000000' : '#e1e1e1';
+    }
     return styleMap({
+      '--vol-tooltip-text-color': tooltipTextColor,
       ...(scale && { '--mmp-unit': `${40 * scale}px` }),
-      ...(this.foregroundColor &&
-        this.player.isActive && {
-        '--mmp-text-color': this.foregroundColor,
-        '--mmp-icon-color': this.foregroundColor,
-        '--mmp-icon-active-color': this.foregroundColor,
-        '--mmp-accent-color': this.foregroundColor,
-        '--secondary-text-color': this.foregroundColor,
-        '--mmp-media-cover-info-color': this.foregroundColor,
-        '--ha-control-color': this.foregroundColor,
+      ...(fg && this.player.isActive && {
+        '--mmp-text-color': fg,
+        '--mmp-icon-color': fg,
+        '--mmp-icon-active-color': fg,
+        '--mmp-accent-color': fg,
+        '--secondary-text-color': fg,
+        '--mmp-media-cover-info-color': fg,
+        '--ha-control-color': fg,
       }),
     });
   }
