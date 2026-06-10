@@ -38,8 +38,11 @@ class MiniMediaPlayerMediaControls extends LitElement {
   }
 
   fireHaptic(intensity = 'light') {
-    const hapticEvent = new Event('haptic', { bubbles: true, composed: true });
-    hapticEvent.detail = intensity;
+    const hapticEvent = new CustomEvent('haptic', {
+      bubbles: true,
+      composed: true,
+      detail: intensity,
+    });
     this.dispatchEvent(hapticEvent);
   }
 
