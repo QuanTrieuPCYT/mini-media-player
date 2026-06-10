@@ -111,7 +111,7 @@ class MiniMediaPlayerPowerstrip extends LitElement {
         ? html` <ha-icon-button
             class="power-button"
             .icon=${ICON.POWER}
-            @click=${(e) => this.player.toggle(e)}
+            @click=${(e) => { window.dispatchEvent(new CustomEvent('haptic', { detail: 'light' })); this.player.toggle(e); }}
             ?color=${this.powerColor}
           >
             <ha-icon .icon=${ICON.POWER}></ha-icon>
