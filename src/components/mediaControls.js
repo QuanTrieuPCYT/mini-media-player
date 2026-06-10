@@ -37,6 +37,12 @@ class MiniMediaPlayerMediaControls extends LitElement {
     return this.config.jump_amount || 10;
   }
 
+  fireHaptic(intensity = 'light') {
+    const hapticEvent = new Event('haptic', { bubbles: true, composed: true });
+    hapticEvent.detail = intensity;
+    this.dispatchEvent(hapticEvent);
+  }
+
   render() {
     const { hide } = this.config;
     return html`
@@ -47,7 +53,7 @@ class MiniMediaPlayerMediaControls extends LitElement {
         <div class='flex mmp-media-controls__media' ?flow=${this.config.flow || this.break}>
           ${!hide.prev && this.player.supportsPrev ? html`
             <ha-icon-button
-              @click=${e => this.player.prev(e)}
+              @click=${e => { this.fireHaptic(); this.player.prev(e); }}
               .icon=${ICON.PREV}>
              <ha-icon .icon=${ICON.PREV}></ha-icon>
             </ha-icon-button>` : ''}
@@ -56,7 +62,7 @@ class MiniMediaPlayerMediaControls extends LitElement {
           ${this.renderJumpForwardButton()}
           ${!hide.next && this.player.supportsNext ? html`
             <ha-icon-button
-              @click=${e => this.player.next(e)}
+              @click=${e => { this.fireHaptic(); this.player.next(e); }}
               .icon=${ICON.NEXT}>
              <ha-icon .icon=${ICON.NEXT}></ha-icon>
             </ha-icon-button>` : ''}
@@ -70,7 +76,7 @@ class MiniMediaPlayerMediaControls extends LitElement {
       <div class='flex mmp-media-controls__shuffle'>
         <ha-icon-button
           class='shuffle-button'
-          @click=${e => this.player.toggleShuffle(e)}
+          @click=${e => { this.fireHaptic(); this.player.toggleShuffle(e); }}
           .icon=${ICON.SHUFFLE}
           ?color=${this.player.shuffle}>
           <ha-icon .icon=${ICON.SHUFFLE}></ha-icon>
@@ -87,7 +93,7 @@ class MiniMediaPlayerMediaControls extends LitElement {
       <div class='flex mmp-media-controls__repeat'>
         <ha-icon-button
           class='repeat-button'
-          @click=${e => this.player.toggleRepeat(e)}
+          @click=${e => { this.fireHaptic(); this.player.toggleRepeat(e); }}
           .icon=${ICON.REPEAT[this.player.repeat]}
           ?color=${colored}>
           <ha-icon .icon=${ICON.REPEAT[this.player.repeat]}></ha-icon>
@@ -151,12 +157,12 @@ class MiniMediaPlayerMediaControls extends LitElement {
     return html`
       ${this.renderMuteButton(muted)}
       <ha-icon-button
-        @click=${e => this.player.volumeDown(e)}
+        @click=${e => { this.fireHaptic(); this.player.volumeDown(e); }}
         .icon=${ICON.VOL_DOWN}>
           <ha-icon .icon=${ICON.VOL_DOWN}></ha-icon>
       </ha-icon-button>
       <ha-icon-button
-        @click=${e => this.player.volumeUp(e)}
+        @click=${e => { this.fireHaptic(); this.player.volumeUp(e); }}
         .icon=${ICON.VOL_UP}>
           <ha-icon .icon=${ICON.VOL_UP}></ha-icon>
       </ha-icon-button>
@@ -176,7 +182,7 @@ class MiniMediaPlayerMediaControls extends LitElement {
       case 'play_pause':
         return html`
           <ha-icon-button
-            @click=${e => this.player.playPause(e)}
+            @click=${e => { this.fireHaptic(); this.player.playPause(e); }}
             .icon=${ICON.PLAY[this.player.isPlaying]}>
             <ha-icon .icon=${ICON.PLAY[this.player.isPlaying]}></ha-icon>
           </ha-icon-button>
@@ -184,7 +190,7 @@ class MiniMediaPlayerMediaControls extends LitElement {
       case 'stop':
         return html`
           <ha-icon-button
-            @click=${e => this.player.stop(e)}
+            @click=${e => { this.fireHaptic(); this.player.stop(e); }}
             .icon=${ICON.STOP.true}>
             <ha-icon .icon=${ICON.STOP.true}></ha-icon>
           </ha-icon-button>
@@ -192,7 +198,7 @@ class MiniMediaPlayerMediaControls extends LitElement {
       case 'play_stop':
         return html`
           <ha-icon-button
-            @click=${e => this.player.playStop(e)}
+            @click=${e => { this.fireHaptic(); this.player.playStop(e); }}
             .icon=${ICON.STOP[this.player.isPlaying]}>
             <ha-icon .icon=${ICON.STOP[this.player.isPlaying]}></ha-icon>
           </ha-icon-button>
@@ -200,7 +206,7 @@ class MiniMediaPlayerMediaControls extends LitElement {
       case 'next':
         return html`
           <ha-icon-button
-            @click=${e => this.player.next(e)}
+            @click=${e => { this.fireHaptic(); this.player.next(e); }}
             .icon=${ICON.NEXT}>
             <ha-icon .icon=${ICON.NEXT}></ha-icon>
           </ha-icon-button>
@@ -209,7 +215,7 @@ class MiniMediaPlayerMediaControls extends LitElement {
         if (!this.player.supportsMute) return;
         return html`
           <ha-icon-button
-            @click=${e => this.player.toggleMute(e)}
+            @click=${e => { this.fireHaptic(); this.player.toggleMute(e); }}
             .icon=${ICON.MUTE[muted]}>
             <ha-icon .icon=${ICON.MUTE[muted]}></ha-icon>
           </ha-icon-button>
@@ -222,25 +228,25 @@ class MiniMediaPlayerMediaControls extends LitElement {
     return html`
       ${(!hide.play_pause && this.player.supportsPause) ? this.player.assumedState ? html`
         <ha-icon-button
-          @click=${e => this.player.play(e)}
+          @click=${e => { this.fireHaptic(); this.player.play(e); }}
           .icon=${ICON.PLAY.false}>
             <ha-icon .icon=${ICON.PLAY.false}></ha-icon>
         </ha-icon-button>
         <ha-icon-button
-          @click=${e => this.player.pause(e)}
+          @click=${e => { this.fireHaptic(); this.player.pause(e); }}
           .icon=${ICON.PLAY.true}>
             <ha-icon .icon=${ICON.PLAY.true}></ha-icon>
         </ha-icon-button>
       ` : html`
         <ha-icon-button
-          @click=${e => this.player.playPause(e)}
+          @click=${e => { this.fireHaptic(); this.player.playPause(e); }}
           .icon=${ICON.PLAY[this.player.isPlaying]}>
             <ha-icon .icon=${ICON.PLAY[this.player.isPlaying]}></ha-icon>
         </ha-icon-button>
       ` : html``}
       ${(!hide.play_stop && this.player.supportsStop) ? html`
         <ha-icon-button
-          @click=${e => this.handleStop(e)}
+          @click=${e => { this.fireHaptic(); this.handleStop(e); }}
           .icon=${hide.play_pause ? ICON.STOP[this.player.isPlaying] : ICON.STOP.true}>
             <ha-icon .icon=${(hide.play_pause || !this.player.supportsPause) ? ICON.STOP[this.player.isPlaying] : ICON.STOP.true}></ha-icon>
         </ha-icon-button>
@@ -253,7 +259,7 @@ class MiniMediaPlayerMediaControls extends LitElement {
     if (hidden || !this.player.hasProgress) return html``;
     return html`
       <ha-icon-button
-        @click=${e => this.player.jump(e, this.jumpAmount)}
+        @click=${e => { this.fireHaptic(); this.player.jump(e, this.jumpAmount); }}
         .icon=${ICON.FAST_FORWARD}>
         <ha-icon .icon=${ICON.FAST_FORWARD}></ha-icon>
       </ha-icon-button>
@@ -265,7 +271,7 @@ class MiniMediaPlayerMediaControls extends LitElement {
     if (hidden || !this.player.hasProgress) return html``;
     return html`
       <ha-icon-button
-        @click=${e => this.player.jump(e, -this.jumpAmount)}
+        @click=${e => { this.fireHaptic(); this.player.jump(e, -this.jumpAmount); }}
         .icon=${ICON.REWIND}>
         <ha-icon .icon=${ICON.REWIND}></ha-icon>
       </ha-icon-button>
@@ -277,6 +283,7 @@ class MiniMediaPlayerMediaControls extends LitElement {
   }
 
   handleVolumeChange(ev) {
+    this.fireHaptic('medium');
     const vol = parseFloat(ev.target.value) / 100;
     this.player.setVolume(ev, vol);
   }
